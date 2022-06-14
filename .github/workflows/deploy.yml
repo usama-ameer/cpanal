@@ -1,8 +1,8 @@
 on:
   push:
     branches:
-      -main
-name: 🚀 Deploy website on push
+      - develop
+name: 🚀 Deploy test website on push
 jobs:
   web-deploy:
     name: 🎉 Deploy
@@ -12,8 +12,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@4.1.0
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
-          server: ftp.xufire.pk
-          username: xufireintern@xufire.pk
-          password: ${{ secrets.ftp_password }}
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME}}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: public_html/vanessa/
