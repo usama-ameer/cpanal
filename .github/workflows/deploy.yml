@@ -1,34 +1,29 @@
+name: deploy testing
+
 on:
   push:
     branches:
       - main
-name: Production Deploy
+      
 jobs:
   web-deploy:
     name: Deploy
     runs-on: ubuntu-latest
+
     steps:
       - name: Get latest code
         uses: actions/checkout@v2
-
-      # Setup PHP version on server
-      - name: Setup PHP
-        uses: actions/setup-php@v2
-        with:
-          php-version: 8.0
-          # extensions: imagick, swoole # if project need extensions in future
 
       # deploy to FTP server
       - name: Deploy files to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          FTP_HOST: ${{ secrets.FTP_SERVER }}
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-  slackNotification:
-    needs: build-deploy
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+    
+  slack-notification:
+    needs: web-deploy
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
@@ -43,4 +38,6 @@ jobs:
         SLACK_TITLE: Xufire test deploy
         SLACK_USERNAME: Git Auto Deployment
         SLACK_WEBHOOK: ${{ secrets.SLACK_DEPLOYMENTS_WEBHOOK }}
-        # TODO: generate API doc before upload from test
+
+          # TODO: generate API doc before upload from test
+
