@@ -1,0 +1,42 @@
+name: deploy testing
+
+on:
+  push:
+    branches:
+      - main
+      
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v2
+
+      # deploy to FTP server
+      - name: Deploy files to FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+    
+  slack-notification:
+    needs: web-deploy
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Git-Auto-Deployment
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_CHANNEL: deploy
+        SLACK_COLOR: ${{ job.status }}
+        SLACK_ICON: https://xufire.com/x-theme.png
+        SLACK_MESSAGE: 'Xufire Profit -Dev- Uploaded :rocket:'
+        SLACK_TITLE: Xufire test deploy
+        SLACK_USERNAME: Git Auto Deployment
+        SLACK_WEBHOOK: ${{ secrets.SLACK_DEPLOYMENTS_WEBHOOK }}
+
+          # TODO: generate API doc before upload from test
